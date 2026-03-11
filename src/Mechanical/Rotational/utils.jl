@@ -7,7 +7,7 @@
 end
 
 Base.@doc """
-    Support(;name)
+    Flange(;name)
 
 1-dim. rotational flange of a shaft.
 
