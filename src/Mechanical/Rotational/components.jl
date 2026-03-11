@@ -326,3 +326,25 @@ Friction model: "Armstrong, B. and C.C. de Wit, Friction Modeling and Compensati
     sys = System(equations, t, vars, pars; name, systems)
     return extend(sys, partial_comp)
 end
+
+@component function Motor(; name)
+    @named partial_comp = PartialCompliant()
+    @unpack phi_rel, tau = partial_comp
+
+    pars = @parameters begin
+    end
+
+    systems = @named begin
+        tau_input = RealInput()
+    end
+
+    vars = @variables begin
+    end
+
+    equations = Equation[
+        tau ~ tau_input.u
+    ]
+
+    sys = System(equations, t, vars, pars; name, systems)
+    return extend(sys, partial_comp)
+end

@@ -11,7 +11,7 @@ import ...@symcheck
 export Flange, Support
 include("utils.jl")
 
-export Fixed, Inertia, Spring, Damper, SpringDamper, IdealGear, RotationalFriction
+export Fixed, Inertia, Spring, Damper, SpringDamper, IdealGear, RotationalFriction, Motor
 include("components.jl")
 
 export Torque, ConstantTorque, Speed, Position
