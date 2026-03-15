@@ -68,6 +68,9 @@ const GROUP = get(ENV, "GROUP", "All")
             @safetestset "Mechanical Translation Modelica" begin
                 include("Mechanical/translational_modelica.jl")
             end
+            @safetestset "Mechanical Body2D" begin
+                include("Mechanical/body2d.jl")
+            end
             @safetestset "Multi-Domain" begin
                 include("multi_domain.jl")
             end
