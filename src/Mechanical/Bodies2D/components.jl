@@ -21,6 +21,9 @@ Body in 2 dimensions with a mass and a moment of inertia. By itself, it can move
   - `vx(t)`: [`m/s`] Absolute x-velocity of the body's center of mass
   - `vy(t)`: [`m/s`] Absolute y-velocity of the body's center of mass
   - `w(t)`: [`rad/s`] Absolute angular velocity of body
+  - `ax(t)`: [`m/s²`] Absolute x-acceleration of the body's center of mass
+  - `ay(t)`: [`m/s²`] Absolute y-acceleration of the body's center of mass
+  - `a(t)`: [`rad/s²`] Absolute angular acceleration of the body
 """
 @component function Rigidbody2d(; m = nothing, J = nothing,
                              x = nothing, y = nothing, phi = nothing,
@@ -45,6 +48,9 @@ Body in 2 dimensions with a mass and a moment of inertia. By itself, it can move
         vx(t) = vx, [description = "Absolute x-velocity of the body's center of mass", guess = 0.0]
         vy(t) = vy, [description = "Absolute y-velocity of the body's center of mass", guess = 0.0]
         w(t) = w, [description = "Absolute angular velocity of body", guess = 0.0]
+        ax(t), [description = "Absolute x-acceleration of the body's center of mass", guess = 0.0]
+        ay(t), [description = "Absolute y-acceleration of the body's center of mass", guess = 0.0]
+        a(t), [description = "Absolute angular acceleration of the body", guess = 0.0]
     end
 
     equations = Equation[
@@ -54,9 +60,12 @@ Body in 2 dimensions with a mass and a moment of inertia. By itself, it can move
         D(x) ~ vx,
         D(y) ~ vy,
         D(phi) ~ w,
-        m * D(vx) ~ frame.fx,
-        m * D(vy) ~ frame.fy,
-        J * D(w) ~ frame.tau,
+        D(vx) ~ ax,
+        D(vy) ~ ay,
+        D(w) ~ a,
+        m * ax ~ frame.fx,
+        m * ay ~ frame.fy,
+        J * a ~ frame.tau,
     ]
 
     return System(equations, t, vars, pars; name, systems)
