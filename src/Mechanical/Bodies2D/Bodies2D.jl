@@ -1,22 +1,20 @@
 """
 Library to model 2-dimensional mechanical systems with rigid bodies and links of different kinds between them.
-
-This is very non-functioning and will probably never be.
 """
-module Body2D
+module Bodies2D
 
 using ModelingToolkitBase, Symbolics, IfElse
 using ModelingToolkitBase: t_nounits as t, D_nounits as D
 using ...Blocks: RealInput, RealOutput
 import ...@symcheck
 
-export Frame
+export Frame2d
 include("utils.jl")
 
-export Body2d, FrameOffset
+export Rigidbody2d, Frame2dOffset
 include("components.jl")
 
-export ForceAndTorque, SupportedTorque
+export ForceAndTorque2d, SupportedTorque2d
 include("sources.jl")
 
 end

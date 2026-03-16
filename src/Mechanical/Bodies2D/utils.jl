@@ -1,6 +1,6 @@
 
 """
-    Frame(;name, x, y, phi)
+    Frame2d(;name, x, y, phi)
 
 Frame of reference and attachment point for 2D rigid body mechanics.
 
@@ -13,7 +13,7 @@ Frame of reference and attachment point for 2D rigid body mechanics.
   - `fy(t)`: [`N`] y-component of the applied force
   - `tau(t)`: [`N·m`] Applied torque
 """
-@connector function Frame(; name, x = nothing, y = nothing, phi = nothing, fx = nothing, fy = nothing, tau = nothing)
+@connector function Frame2d(; name, x = nothing, y = nothing, phi = nothing, fx = nothing, fy = nothing, tau = nothing)
     vars = @variables begin
         x(t) = x, [description = "Absolute x-position of the frame", guess = 0.0]
         y(t) = y, [description = "Absolute y-position of the frame", guess = 0.0]

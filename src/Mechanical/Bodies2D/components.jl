@@ -1,12 +1,12 @@
 
 """
-    Body2d(;name, m, J, x, y, phi, vx, vy, w)
+    Rigidbody2d(;name, m, J, x, y, phi, vx, vy, w)
 
 Body in 2 dimensions with a mass and a moment of inertia. By itself, it can move and rotate freely.
 
 # Connectors:
 
-  - `frame` [Frame](@ref)
+  - `frame` [Frame2d](@ref)
 
 # Parameters:
 
@@ -21,11 +21,8 @@ Body in 2 dimensions with a mass and a moment of inertia. By itself, it can move
   - `vx(t)`: [`m/s`] Absolute x-velocity of the body's center of mass
   - `vy(t)`: [`m/s`] Absolute y-velocity of the body's center of mass
   - `w(t)`: [`rad/s`] Absolute angular velocity of body
-  - `ax(t)`: [`m/s²`] Absolute x-acceleration of the body's center of mass
-  - `ay(t)`: [`m/s²`] Absolute y-acceleration of the body's center of mass
-  - `a(t)`: [`rad/s²`] Absolute angular acceleration of the body
 """
-@component function Body2d(; m = nothing, J = nothing,
+@component function Rigidbody2d(; m = nothing, J = nothing,
                              x = nothing, y = nothing, phi = nothing,
                              vx = nothing, vy = nothing, w = nothing,
                              name)
@@ -38,7 +35,7 @@ Body in 2 dimensions with a mass and a moment of inertia. By itself, it can move
     end
 
     systems = @named begin
-        frame = Frame()
+        frame = Frame2d()
     end
 
     vars = @variables begin
@@ -48,9 +45,6 @@ Body in 2 dimensions with a mass and a moment of inertia. By itself, it can move
         vx(t) = vx, [description = "Absolute x-velocity of the body's center of mass", guess = 0.0]
         vy(t) = vy, [description = "Absolute y-velocity of the body's center of mass", guess = 0.0]
         w(t) = w, [description = "Absolute angular velocity of body", guess = 0.0]
-        ax(t), [description = "Absolute x-acceleration of the body's center of mass", guess = 0.0]
-        ay(t), [description = "Absolute y-acceleration of the body's center of mass", guess = 0.0]
-        a(t), [description = "Absolute angular acceleration of the body", guess = 0.0]
     end
 
     equations = Equation[
@@ -60,20 +54,32 @@ Body in 2 dimensions with a mass and a moment of inertia. By itself, it can move
         D(x) ~ vx,
         D(y) ~ vy,
         D(phi) ~ w,
-        D(vx) ~ ax,
-        D(vy) ~ ay,
-        D(w) ~ a,
-        m * ax ~ frame.fx,
-        m * ay ~ frame.fy,
-        J * a ~ frame.tau,
+        m * D(vx) ~ frame.fx,
+        m * D(vy) ~ frame.fy,
+        J * D(w) ~ frame.tau,
     ]
 
     return System(equations, t, vars, pars; name, systems)
 end
 
-@component function FrameOffset(; name, x_0, y_0, k = 1e6)
-    L_0 = sqrt(x_0^2 + y_0^2)
+"""
+    Frame2dOffset(; name, x_0, y_0, k)
 
+Rigid link between `frame_a` and `frame_b` with offset `x_0` and `y_0` in the local coordinate system of `frame_a`.
+The offset is implemented as a spring with high stiffness `k` to avoid numerical issues.
+
+# Connectors:
+
+  - `frame_a` [Frame2d](@ref)
+  - `frame_b` [Frame2d](@ref)
+
+# Parameters:
+
+  - `x_0`: [`m`] x-offset of `frame_b` relative to `frame_a` in the local coordinates of `frame_a`
+  - `y_0`: [`m`] y-offset of `frame_b` relative to `frame_a` in the local coordinates of `frame_a`
+  - `k`: [`N/m`] Spring stiffness
+"""
+@component function Frame2dOffset(; name, x_0, y_0, k = 1e6)
     pars = @parameters begin
         x_0 = x_0
         y_0 = y_0
@@ -87,8 +93,8 @@ end
     end
 
     systems = @named begin
-        frame_a = Frame()
-        frame_b = Frame()
+        frame_a = Frame2d()
+        frame_b = Frame2d()
     end
 
     rx_0 = cos(frame_a.phi) * x_0 - sin(frame_a.phi) * y_0
@@ -99,18 +105,15 @@ end
         frame_b.x ~ frame_a.x + rx,
         frame_b.y ~ frame_a.y + ry,
         frame_b.phi ~ frame_a.phi,
-        # Force balance:
-        # frame_a.fx + frame_b.fx ~ λx * rx / rx_0,
-        # frame_a.fy + frame_b.fy ~ λy * ry / ry_0,
+        # Torque balance:
+        frame_a.tau + frame_b.tau + rx * frame_b.fy - ry * frame_b.fx ~ 0,
+        # Spring forces:
+        λx ~ k * (rx - rx_0),
+        λy ~ k * (ry - ry_0),
         frame_a.fx ~ -λx,
         frame_b.fx ~ λx,
         frame_a.fy ~ -λy,
         frame_b.fy ~ λy,
-        # Torque balance:
-        frame_a.tau + frame_b.tau + rx * frame_b.fy - ry * frame_b.fx ~ 0,
-        # Compliance:
-        λx ~ k * (rx - rx_0),
-        λy ~ k * (ry - ry_0),
     ]
 
     return System(equations, t, vars, pars; name, systems)

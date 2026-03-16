@@ -1,14 +1,17 @@
 
 """
-    ForceAndTorque(; name, fx, fy, tau)
+    ForceAndTorque2d(; name)
 
-Force and torque applied to a frame.
+The provided force and torque are applied to a frame.
 
 # Connectors:
 
-  - `frame` [Frame](@ref)
+  - `fx` [RealInput](@ref)
+  - `fy` [RealInput](@ref)
+  - `tau` [RealInput](@ref)
+  - `frame` [Frame2d](@ref)
 """
-@component function ForceAndTorque(; name)
+@component function ForceAndTorque2d(; name)
     pars = @parameters begin
     end
 
@@ -16,7 +19,7 @@ Force and torque applied to a frame.
         fx = RealInput()
         fy = RealInput()
         tau = RealInput()
-        frame = Frame()
+        frame = Frame2d()
     end
 
     vars = @variables begin
@@ -31,14 +34,26 @@ Force and torque applied to a frame.
     return System(equations, t, [], pars; name, systems)
 end
 
-@component function SupportedTorque(; name)
+
+"""
+    SupportedTorque2d(; name)
+
+Torque applied to a frame. The same torque is applied to the support frame in opposite direction.
+
+# Connectors:
+
+  - `tau` [RealInput](@ref)
+  - `frame` [Frame2d](@ref)
+  - `support` [Frame2d](@ref)
+"""
+@component function SupportedTorque2d(; name)
     pars = @parameters begin
     end
 
     systems = @named begin
         tau = RealInput()
-        frame = Frame()
-        support = Frame()
+        frame = Frame2d()
+        support = Frame2d()
     end
 
     vars = @variables begin
