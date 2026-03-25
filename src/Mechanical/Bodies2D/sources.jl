@@ -31,7 +31,7 @@ The provided force and torque are applied to a frame.
         frame.tau ~ -tau.u,
     ]
 
-    return System(equations, t, [], pars; name, systems)
+    return System(equations, t, vars, pars; name, systems)
 end
 
 
@@ -68,5 +68,5 @@ Torque applied to a frame. The same torque is applied to the support frame in op
         support.fy ~ 0.0
     ]
 
-    return System(equations, t, [], pars; name, systems)
+    return System(equations, t, vars, pars; name, systems)
 end

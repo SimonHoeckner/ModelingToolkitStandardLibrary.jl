@@ -7,7 +7,7 @@ using ModelingToolkit: t_nounits as t, D_nounits as D
     # A body with an initial x-velocity of 2m/s and no external forces.
     # Expected: x-position of 2m/s * 3s after 3 seconds of simulation.
 
-    @named sys = Rigidbody2d(m = 1.0, J = 1.0, x = 0.0, y = 0.0, phi = 0.0, vx = 2.0, vy = 0.0, w = 0.0)
+    @named sys = Rigidbody2d(m = 1.0, J = 1.0, g = 0.0, x = 0.0, y = 0.0, phi = 0.0, vx = 2.0, vy = 0.0, w = 0.0)
     sys = mtkcompile(sys)
     prob = ODEProblem(sys, [], (0.0, 5.0))
     sol = solve(prob, Tsit5())
@@ -23,7 +23,7 @@ end
     # A body with mass 2 kg is subjected to constant a force in x-direction of 4 N.
     # Expected: x-position of 1/2 * (4N / 2kg) * 3s = 3m after 3 seconds of simulation.
     function ForcedBody(;name)
-        @named body = Rigidbody2d(m = 2.0, J = 1.0, x = 0.0, y = 0.0, phi = 0.0,
+        @named body = Rigidbody2d(m = 2.0, J = 1.0, g = 0.0, x = 0.0, y = 0.0, phi = 0.0,
                                 vx = 0.0, vy = 0.0, w = 0.0)
         @named force = ForceAndTorque2d()
         @named force_step = Blocks.Step(height = 4.0, start_time = 0.0)
@@ -60,8 +60,8 @@ end
     tau = 1.0
 
     systems = @named begin
-        b1 = Rigidbody2d(m = m1, J = J1)
-        b2 = Rigidbody2d(m = m2, J = J2)
+        b1 = Rigidbody2d(m = m1, J = J1, g = 0.0)
+        b2 = Rigidbody2d(m = m2, J = J2, g = 0.0)
         b1_b2_offset = Frame2dOffset(x_0 = l, y_0 = 0.0)
         b1_forces = ForceAndTorque2d()
         b1_fx = Constant(k = fx)
@@ -152,8 +152,8 @@ end
     tau = 2.0 # N·m
 
     systems = @named begin
-        b1 = Rigidbody2d(m = m1, J = J1, x = 0.0, y = 0.0)
-        b2 = Rigidbody2d(m = m2, J = J2, x = 0.0, y = 0.0)
+        b1 = Rigidbody2d(m = m1, J = J1, g = 0.0, x = 0.0, y = 0.0)
+        b2 = Rigidbody2d(m = m2, J = J2, g = 0.0, x = 0.0, y = 0.0)
         supported_torque = SupportedTorque2d()
         b1_b2_tau = Constant(k = tau)
     end

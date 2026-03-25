@@ -11,7 +11,7 @@ import ...@symcheck
 export Frame2d
 include("utils.jl")
 
-export Rigidbody2d, Frame2dOffset
+export Fixed2d, Rigidbody2d, Frame2dOffset, RevoluteJoint2d, PrismaticJoint2d
 include("components.jl")
 
 export ForceAndTorque2d, SupportedTorque2d
